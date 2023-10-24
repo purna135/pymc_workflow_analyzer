@@ -9,8 +9,11 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max-upload limit
 
-ALLOWED_EXTENSIONS = {'py', 'ipynb'}
+if not os.path.exists(app.config['UPLOAD_FOLDER']):
+    os.makedirs(app.config['UPLOAD_FOLDER'])  # create folder for uploaded files
 
+ALLOWED_EXTENSIONS = {'py', 'ipynb'}
+        
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
@@ -52,6 +55,4 @@ def index():
 
 
 if __name__ == "__main__":
-    if not os.path.exists(app.config['UPLOAD_FOLDER']):
-        os.makedirs(app.config['UPLOAD_FOLDER'])  # create folder for uploaded files
     app.run(debug=True)
