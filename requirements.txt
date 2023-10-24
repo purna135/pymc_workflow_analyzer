@@ -2,4 +2,4 @@ Flask==3.0.0
 gunicorn==21.2.0
 requests==2.31.0
 nbformat==5.9.2
-pymc==5.9.0
+pymc==5.6.0
