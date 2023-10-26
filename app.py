@@ -21,7 +21,17 @@ def allowed_file(filename):
 def index():
     report = None
     error = None
-    if request.method == 'POST':
+    url = request.args.get('url')  # Get the URL parameter from the query string
+    code = None
+    
+    if url:
+        try:
+            analysis_data = static_analyzer(url, source_type="url")
+            report = generate_static_report(analysis_data)
+        except Exception as e:
+            error = str(e)
+            
+    elif request.method == 'POST':
         code = request.form['code']
         url = request.form['url']
         file = request.files['file']
@@ -51,7 +61,7 @@ def index():
             if filepath and os.path.exists(filepath):
                 os.remove(filepath)  # Ensure file is deleted if an error occurs.
     
-    return render_template('index.html', report=report, error=error)
+    return render_template('index.html', report=report, error=error, code=code, url=url)
 
 
 if __name__ == "__main__":
