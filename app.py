@@ -23,8 +23,10 @@ def index():
     error = None
     url = request.args.get('url')  # Get the URL parameter from the query string
     code = None
+    source = None 
     
-    if url:
+    if request.method == 'GET' and url:
+        source = "URL"
         try:
             analysis_data = static_analyzer(url, source_type="url")
             report = generate_static_report(analysis_data)
@@ -39,6 +41,7 @@ def index():
 
         try:
             if file:
+                source = "File"
                 if allowed_file(file.filename):
                     filename = secure_filename(file.filename)
                     filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
@@ -48,9 +51,11 @@ def index():
                 else:
                     error = "Please upload .py or .ipynb file only"
             elif code:
+                source = "Code"
                 analysis_data = static_analyzer(code, source_type="code")
                 report = generate_static_report(analysis_data)
             elif url:
+                source = "URL"
                 analysis_data = static_analyzer(url, source_type="url")
                 report = generate_static_report(analysis_data)
             else:
@@ -61,7 +66,7 @@ def index():
             if filepath and os.path.exists(filepath):
                 os.remove(filepath)  # Ensure file is deleted if an error occurs.
     
-    return render_template('index.html', report=report, error=error, code=code, url=url)
+    return render_template('index.html', report=report, error=error, code=code, url=url, source = source)
 
 
 if __name__ == "__main__":
